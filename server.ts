@@ -14,17 +14,16 @@ const SEND_MESSAGE_TO_TELEGRAM_API = "/sendMessage";
 const DYNALIST_API_URL_HOST = 'https://dynalist.io/api/v1';
 const ADD_TO_INBOX_PATH = "/inbox/add";
 const body = {
-    token: process.env.DYNALIST_TOKEN,
+    token: process.env.DYNALIST_API_KEY,
 };
 
 app.use(bodyParser.json());
 
 app.post('/webhook', async (req: Request, res: Response) => {
-    console.log("request body ", JSON.stringify(req.body));
 
-    const message = req.body.edited_message.text;
-    const messageID = req.body.message.id;
-    const chatId = req.body.message.chat.id;
+    const message = req.body.message ? req.body.message.text : req.body.edited_message.text;
+    const messageID = req.body.message ? req.body.message.message_id : req.body.edited_message.message_id;
+    const chatId = req.body.message ? req.body.message.chat.id : req.body.edited_message.chat.id;
 
     if (message.startsWith('/add ')) {
         const content = message.slice(5);  // Extract the content after the command
@@ -37,7 +36,6 @@ app.post('/webhook', async (req: Request, res: Response) => {
 
 async function addToDynalist(content: string): Promise<void> {
 
-    console.log("we're sending the message to dynalist now, ", content);
     const data = {
         ...body,
         index: 0,
