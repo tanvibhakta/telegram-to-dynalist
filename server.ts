@@ -56,13 +56,13 @@ async function addToDynalist(content: string): Promise<void> {
     }
 }
 
-async function sendMessage(chatId: number, text: string, message_id: number): Promise<void> {
+async function sendMessage(chatId: number, text: string, messageId: number): Promise<void> {
     try {
         await axios.post(`${TELEGRAM_API_URL_HOST}${SEND_MESSAGE_TO_TELEGRAM_API}`, {
             chat_id: chatId,
             text: text,
             reply_parameters: {
-                message_id: message_id
+                message_id: messageId
             }
         });
     } catch (error) {
