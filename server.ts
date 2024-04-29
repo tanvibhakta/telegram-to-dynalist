@@ -19,6 +19,12 @@ const body = {
 
 app.use(bodyParser.json());
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).send({ status: 'OK', message: 'API is running' });
+});
+
+
 app.post('/webhook', async (req: Request, res: Response) => {
 
     const message = req.body.message ? req.body.message.text : req.body.edited_message.text;
