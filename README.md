@@ -1,5 +1,5 @@
 # Telegram to Dynalist 
-Telegram is the app I use the most on my phone. Dynalist is my organisational succor on my desktop. I need an effective and simple way to manage one from the other (the dynalist android app is unfortunately just a little too much) and so thsi project was born.
+Telegram is the app I use the most on my phone. Dynalist is my organisational succor on my desktop. I need an effective and simple way to manage one from the other (the dynalist android app is unfortunately just a little too much) and so this project was born.
 
 ## Stack
 1. express.js (it works!)
