@@ -25,6 +25,7 @@ const ACTIONS = {
   ADD: "add",
   EDIT: "edit",
   DELETE: "delete",
+  DONE: "done"
   // LIST_ALL_TO_DO: "listAllToDo",
 };
 
@@ -81,22 +82,29 @@ function getActionType(req: Request) {
 
   let message: string = req.body.message?.text || req.body.edited_message.text;
 
-    if (message.startsWith('/add ')) {
-        const content = message.slice(5);  // Extract the content after the command
-        await addToDynalist(content);
-        await sendMessage(chatId, `Added to Dynalist ✅`, messageID);
-    }
   if (message.startsWith("/add")) {
     actionType = ACTIONS.ADD;
   } else if (message?.startsWith("/edit")) {
     actionType = ACTIONS.EDIT;
   } else if (message?.startsWith("/delete")) {
     actionType = ACTIONS.DELETE;
+  }  else if (message?.startsWith("/done")) {
+    actionType = ACTIONS.DONE;
   }
 
-    res.status(200).send('OK');
-});
+  //TODO: if "/add" but edited_message, set actionType to ACTION.EDIT anyway
 
+  return actionType;
+}
+
+// This function strips the message from any commands like /add /edit /delete that are present at the beginning of the message
+function getPureMessage(text: string): string {
+  return text.startsWith("/")
+    ? text.slice(text.split(" ")[0].length + 1)
+    : text;
+}
+
+// Create a list item in the Dynalist inbox
 async function addToDynalist(content: string): Promise<void> {
   const data = {
     ...body,
@@ -112,18 +120,22 @@ async function addToDynalist(content: string): Promise<void> {
   }
 }
 
-async function sendMessage(chatId: number, text: string, messageId: number): Promise<void> {
-    try {
-        await axios.post(`${TELEGRAM_API_URL_HOST}${SEND_MESSAGE_TO_TELEGRAM_API}`, {
-            chat_id: chatId,
-            text: text,
-            reply_parameters: {
-                message_id: messageId
-            }
-        });
-    } catch (error) {
-        console.error('Error sending message:', error);
-    }
+async function markItemAsDone(nodeId: string): Promise<void> {
+  try {
+    await axios.post(`${DYNALIST_API_URL_HOST}${EDIT_DOCUMENT}`, {
+      ...body,
+      file_id: process.env.DYNALIST_INBOX_ID,
+      changes: [{
+        action: "edit",
+        node_id: nodeId,
+        checked: true
+      }]
+    });
+  } catch (error) {
+    console.error("Error marking item as done in Dynalist:", error);
+  }
+}
+
 async function getContentOfInbox() {
   try {
     await axios.post(`${DYNALIST_API_URL_HOST}/doc/read`, {
