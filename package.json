@@ -10,9 +10,14 @@
   "author": "",
   "license": "ISC",
   "nodemonConfig": {
-    "watch": ["*"],
+    "watch": [
+      "*"
+    ],
     "ext": "ts",
-    "ignore": ["node_modules", "dist"],
+    "ignore": [
+      "node_modules",
+      "dist"
+    ],
     "exec": "node dist/server.js"
   },
   "dependencies": {
@@ -23,6 +28,7 @@
     "body-parser": "^1.20.2",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "pg": "^8.11.5",
     "typescript": "^5.4.5"
   },
   "devDependencies": {
