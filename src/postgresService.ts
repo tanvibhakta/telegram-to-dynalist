@@ -34,3 +34,13 @@ export const createRecord = async (telegramId :number, dynalistId :string) => {
 
 }
 
+export const getNodeId = async (telegramId:number)=> {
+    try {
+        const client = await pool.connect();
+        const result = await client.query('SELECT dynalist_id FROM ids WHERE telegram_id=$1', [telegramId]);
+        client.release();
+        return result.rows[0].dynalist_id;
+    } catch (err) {
+        console.error(err);
+    }
+}

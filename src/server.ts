@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 import { setReaction } from "./telegramService";
 import { addToDynalist, markItemAsDone } from "./dynalistService";
-import {createRecord, getAllItems} from "./postgresService";
+import {createRecord, getAllItems, getNodeId} from "./postgresService";
 
 dotenv.config();
 
@@ -54,12 +54,13 @@ app.post("/webhook", async (req: Request, res: Response) => {
     //   chatId = req.body.edited_message.chat.id;
 
     case ACTIONS.DONE:
-      message = req.body.reply_to_message.text;
+      const replyMessageId = req.body.message.reply_to_message.message_id;
       messageId = req.body.message.message_id;
       chatId = req.body.message.chat.id;
       // find the node id of the message to be marked
-      // await markItemAsDone(nodeId);
-      // await setReaction(chatId, messageId);
+      const nodeId = await getNodeId(replyMessageId);
+      await markItemAsDone(nodeId);
+      await setReaction(chatId, messageId);
       break;
 
 
