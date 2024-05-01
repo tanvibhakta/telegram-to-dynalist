@@ -41,6 +41,7 @@ export const markItemAsDone = async (nodeId: string): Promise<void> => {
         });
     } catch (error) {
         console.error("Error marking item as done in Dynalist:", error);
+        throw error;
     }
 }
 

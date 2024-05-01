@@ -42,5 +42,6 @@ export const getNodeId = async (telegramId:number)=> {
         return result.rows[0].dynalist_id;
     } catch (err) {
         console.error(err);
+        throw err;
     }
 }

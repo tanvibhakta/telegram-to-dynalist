@@ -58,9 +58,13 @@ app.post("/webhook", async (req: Request, res: Response) => {
       messageId = req.body.message.message_id;
       chatId = req.body.message.chat.id;
       // find the node id of the message to be marked
+    try {
       const nodeId = await getNodeId(replyMessageId);
       await markItemAsDone(nodeId);
       await setReaction(chatId, messageId);
+    } catch (error) {
+      console.error('Error marking item as done:', error);
+    }
       break;
 
 
