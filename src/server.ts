@@ -85,11 +85,6 @@ app.post("/webhook", async (req: Request, res: Response) => {
 function getActionType(req: Request) {
 
   let actionType = ACTIONS.ADD;
-  if (req.body.message) {
-    actionType = ACTIONS.ADD;
-  } else if (req.body.edited_message) {
-    actionType = ACTIONS.EDIT;
-  }
 
   let message: string = req.body.message?.text || req.body.edited_message.text;
 
@@ -103,7 +98,11 @@ function getActionType(req: Request) {
     actionType = ACTIONS.DONE;
   }
 
-  //TODO: if "/add" but edited_message, set actionType to ACTION.EDIT anyway
+  if (req.body.message) {
+    actionType = ACTIONS.ADD;
+  } else if (req.body.edited_message) {
+    actionType = ACTIONS.EDIT;
+  }
 
   return actionType;
 }
