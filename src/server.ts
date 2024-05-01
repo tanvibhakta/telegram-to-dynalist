@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 
 import { setReaction } from "./telegramService";
-import { addToDynalist, markItemAsDone } from "./dynalistService";
+import {addToDynalist, editItem, markItemAsDone} from "./dynalistService";
 import {createRecord, getAllItems, getNodeId} from "./postgresService";
 
 dotenv.config();
@@ -48,10 +48,18 @@ app.post("/webhook", async (req: Request, res: Response) => {
 
       break;
 
-    // case ACTIONS.EDIT:
-    //   message = getPureMessage(req.body.edited_message.text);
-    //   messageId = req.body.edited_message.message_id;
-    //   chatId = req.body.edited_message.chat.id;
+    case ACTIONS.EDIT:
+      console.log("edit")
+      message = getPureMessage(req.body.edited_message.text);
+      messageId = req.body.edited_message.message_id;
+      chatId = req.body.edited_message.chat.id;
+      try {
+        const nodeId = await getNodeId(messageId);
+        await editItem(message, nodeId);
+      } catch (error) {
+          console.error('Error editing in dynalist:', error);
+      }
+      break;
 
     case ACTIONS.DONE:
       const replyMessageId = req.body.message.reply_to_message.message_id;
@@ -106,16 +114,6 @@ function getPureMessage(text: string): string {
     ? text.slice(text.split(" ")[0].length + 1)
     : text;
 }
-
-
-// function getNodeIdOfMessage(content, message: string) {
-//   let nodeIds = []
-//   content.nodes.forEach((node) => {
-//     if (node.content.contains(message)) {
-//       nodeIds.push(node.id);
-//     }
-//   })
-// }
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

@@ -56,16 +56,19 @@ export const getContentOfInbox = async () => {
     }
 }
 
-export const editItemInDynalist = async (content: string): Promise<void> => {
-    const data = {
-        ...body,
-        // index: 0,
-        content: content,
-        checkbox: true,
-    };
+export const editItem = async (content: string, nodeId: string): Promise<void> => {
 
     try {
-        await axios.post(`${DYNALIST_API_URL_HOST}${EDIT_DOCUMENT}`, data);
+        await axios.post(`${DYNALIST_API_URL_HOST}${EDIT_DOCUMENT}`, {
+                ...body,
+                file_id: config.dynalistInboxId,
+                changes: [{
+                    action: "edit",
+                    content: content,
+                    node_id: nodeId,
+
+                }]
+            });
     } catch (error) {
         console.error("Error editing item in Dynalist:", error);
     }
