@@ -42,5 +42,6 @@ export const setReaction = async (chatId: number, messageId: number): Promise<vo
         });
     } catch (error) {
         console.error("Error setting reaction:", error);
+        throw error;
     }
 }

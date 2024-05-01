@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 
 import { setReaction } from "./telegramService";
 import { addToDynalist, markItemAsDone } from "./dynalistService";
+import {createRecord, getAllItems} from "./postgresService";
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.get("/health", (req, res) => {
 // Receive the webhook update from telegram when a new message is posted/a message is edited, etc
 app.post("/webhook", async (req: Request, res: Response) => {
 
+
   let message, messageId, chatId;
 
   switch (getActionType(req)) {
@@ -36,8 +38,14 @@ app.post("/webhook", async (req: Request, res: Response) => {
       message = getPureMessage(req.body.message.text);
       messageId = req.body.message.message_id;
       chatId = req.body.message.chat.id;
-      await addToDynalist(message);
-      await setReaction(chatId, messageId);
+      try {
+        const dynalistRes = await addToDynalist(message);
+        await createRecord(messageId, dynalistRes.node_id);
+        await setReaction(chatId, messageId);
+      } catch (error) {
+        console.error('Error adding to dynalist:', error);
+      }
+
       break;
 
     // case ACTIONS.EDIT:

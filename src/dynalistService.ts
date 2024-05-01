@@ -11,7 +11,7 @@ const body = {
 };
 
 // Create a list item in the Dynalist inbox
-export const addToDynalist = async (content: string): Promise<void> => {
+export const addToDynalist = async (content: string): Promise<any> => {
     const data = {
         ...body,
         index: 0,
@@ -20,9 +20,11 @@ export const addToDynalist = async (content: string): Promise<void> => {
     };
 
     try {
-        await axios.post(`${DYNALIST_API_URL_HOST}${ADD_TO_INBOX_PATH}`, data);
+        const response  = await axios.post(`${DYNALIST_API_URL_HOST}${ADD_TO_INBOX_PATH}`, data);
+        return response.data;
     } catch (error) {
         console.error("Error updating Dynalist:", error);
+        throw error;
     }
 }
 
