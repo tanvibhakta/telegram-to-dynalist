@@ -96,11 +96,11 @@ function getActionType(req: Request) {
     actionType = ACTIONS.DELETE;
   }  else if (message?.startsWith("/done")) {
     actionType = ACTIONS.DONE;
+  } else if (message?.startsWith("/showAllTasks")) {
+    actionType = ACTIONS.SHOW_ALL_TASKS;
   }
 
-  if (req.body.message) {
-    actionType = ACTIONS.ADD;
-  } else if (req.body.edited_message) {
+    if ( actionType == ACTIONS.ADD && req.body.edited_message) {
     actionType = ACTIONS.EDIT;
   }
 
