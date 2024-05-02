@@ -9,21 +9,22 @@ const SET_REACTION_TELEGRAM_API = "/setMessageReaction";
 export const sendMessage = async (
     chatId: number,
     text: string,
-    messageId: number,
+    messageId?: number | undefined,
 ): Promise<void> => {
+
+    const data = {
+            chat_id: chatId,
+            text: text,
+            ...(messageId ? {
+                reply_parameters: { message_id: messageId }
+            } : {})
+        };
+
     try {
-        await axios.post(
-            `${TELEGRAM_API_URL_HOST}${SEND_MESSAGE_TO_TELEGRAM_API}`,
-            {
-                chat_id: chatId,
-                text: text,
-                reply_parameters: {
-                    message_id: messageId,
-                },
-            },
-        );
+        await axios.post(`${TELEGRAM_API_URL_HOST}${SEND_MESSAGE_TO_TELEGRAM_API}`, data);
     } catch (error) {
         console.error("Error sending message:", error);
+        throw error;
     }
 }
 

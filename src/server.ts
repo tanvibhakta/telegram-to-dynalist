@@ -2,22 +2,21 @@ import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 
-import { setReaction } from "./telegramService";
-import {addToDynalist, editItem, markItemAsDone} from "./dynalistService";
-import {createRecord, getAllItems, getNodeId} from "./postgresService";
+import {sendMessage, setReaction} from "./telegramService";
+import {addToDynalist, editItem, getContent, markItemAsDone} from "./dynalistService";
+import {createRecord, getNodeId} from "./postgresService";
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-
 const ACTIONS = {
   ADD: "add",
   EDIT: "edit",
   DELETE: "delete",
-  DONE: "done"
-  // LIST_ALL_TO_DO: "listAllToDo",
+  DONE: "done",
+  SHOW_ALL_TASKS: "showAllTasks"
 };
 
 app.use(bodyParser.json());
@@ -33,6 +32,7 @@ app.post("/webhook", async (req: Request, res: Response) => {
 
   let message, messageId, chatId;
 
+  // TODO: Surface all errors that happen here to the client so they don't fail silently
   switch (getActionType(req)) {
     case ACTIONS.ADD:
       message = getPureMessage(req.body.message.text);
@@ -49,7 +49,6 @@ app.post("/webhook", async (req: Request, res: Response) => {
       break;
 
     case ACTIONS.EDIT:
-      console.log("edit")
       message = getPureMessage(req.body.edited_message.text);
       messageId = req.body.edited_message.message_id;
       chatId = req.body.edited_message.chat.id;
@@ -75,6 +74,18 @@ app.post("/webhook", async (req: Request, res: Response) => {
     }
       break;
 
+    case ACTIONS.SHOW_ALL_TASKS:
+      chatId = req.body.message ? req.body.message.chat.id :  req.body.edited_message.chat.id;
+        try {
+            const items = await getContent();
+            const tasks = getUndoneTasks(items);
+            for (const task of tasks) {
+                await sendMessage(chatId, task.content);
+            }
+        } catch (error) {
+            console.error('Error getting items:', error);
+        }
+      break;
 
   }
 
@@ -117,3 +128,16 @@ function getPureMessage(text: string): string {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
+function getUndoneTasks(items: any[]) {
+  const rootItem = items.find(item => item.id === "root");
+
+  // TODO: surface this to the client (for example if their inbox is empty)
+  if (!rootItem || !rootItem.children) {
+    console.error("Root item not found or it has no children");
+    return [];
+  }
+
+  const childrenIds = rootItem.children;
+  return items.filter(item => childrenIds.includes(item.id) && item.checked == undefined);
+}

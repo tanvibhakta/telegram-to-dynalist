@@ -4,6 +4,7 @@ import { config } from "./config";
 // Dynalist configuration
 const DYNALIST_API_URL_HOST = "https://dynalist.io/api/v1";
 const ADD_TO_INBOX_PATH = "/inbox/add";
+const READ_DOCUMENT = "/doc/read";
 const EDIT_DOCUMENT = "/doc/edit";
 
 const body = {
@@ -45,14 +46,16 @@ export const markItemAsDone = async (nodeId: string): Promise<void> => {
     }
 }
 
-export const getContentOfInbox = async () => {
+export const getContent = async () => {
     try {
-        await axios.post(`${DYNALIST_API_URL_HOST}/doc/read`, {
+        const res = await axios.post(`${DYNALIST_API_URL_HOST}${READ_DOCUMENT}`, {
             ...body,
             file_id: process.env.DYNALIST_INBOX_ID,
         })
+        return res.data.nodes;
     } catch (error) {
         console.error("Error getting inbox content:", error);
+        throw error;
     }
 }
 
