@@ -21,7 +21,7 @@ const ACTIONS = {
   EDIT: "edit",
   DELETE: "delete",
   DONE: "done",
-  SHOW_ALL_TASKS: "showAllTasks",
+  SHOW_ALL_TASKS: "showalltasks",
 };
 
 app.use(bodyParser.json());
@@ -110,7 +110,7 @@ function getActionType(req: Request) {
     actionType = ACTIONS.DELETE;
   } else if (message?.startsWith("/done")) {
     actionType = ACTIONS.DONE;
-  } else if (message?.startsWith("/showAllTasks")) {
+  } else if (message?.startsWith("/showalltasks")) {
     actionType = ACTIONS.SHOW_ALL_TASKS;
   }
 
