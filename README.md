@@ -28,6 +28,8 @@ To build a tool that adds a message from a specific telegram channel as a bullet
 - [ ] responding to the messages the bot sends you (via /showAllTasks) should also be edited, marked as done, etc
 - [ ] Onboarding flow that allows anyone to use the bot using their own dynalist API key
 - [ ] find the file ID of their inbox automatically
+- [ ] write a script to copy over a subset of the database from server to local
+- [ ] Change the database to include chat_id (user details) so that the bot can respond to multiple users
 - [x] An inline keyboard on the telegram bot so that new users can find all the available commands
 - [x] implement `/showAllTasks`
 - [x] Handle edited messages from telegram correctly
