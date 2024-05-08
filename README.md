@@ -2,6 +2,17 @@
 
 Telegram is the app I use the most on my phone. Dynalist is my organisational succor on my desktop. I need an effective and simple way to manage one from the other (the dynalist android app is unfortunately just a little too much) and so this project was born.
 
+## Local development
+
+1. Clone the repo and navigate into it on your terminal
+2. Create a single postgres table with two columns `telegram_id` and `dynalist_id`
+3. Populate the .env file with your developer keys and postgres credentials
+4. Compile the code and start the server `npm tsc --watch`
+5. In a new terminal tab, start `nodemon` so you can actively develop
+6. In a third terminal tab, start the ngrok server `ngrok http 3000`
+7. Set the webhook of the bot to ngrok by running `curl -F "url=https://<your-ngrok-url>/webhook" https://api.telegram.org/bot<your-telegram-bot-token>/setWebhook`
+8. Magic! You should now be able to send messages to the bot and see them in dynalist. You can also see the logs of the server on the nodemon tab, the requests sent to your server in the ngrok tab, and details about the request body and response in the ngrok url in your browser.
+
 ## Stack
 
 1. express.js (it works!)
